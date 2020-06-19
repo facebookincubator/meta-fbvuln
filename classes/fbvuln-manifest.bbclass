@@ -314,7 +314,7 @@ def vuln_write_data(d, patched):
             opn,
             opv,
             pnven,
-            instance,
+            pncve,
             pvcve,
             cpe_sw,
             cpe_hw,
