@@ -292,28 +292,24 @@ def vuln_write_data(d, patched):
 
     opn = d.getVar('BPN')
     opv = d.getVar("PV")
-    pncve_base = d.getVar("CVE_PRODUCT") or opn
-    pncve_split = pncve_base.split(':')
-    if len(pncve_split) == 1:
-        pnven = d.getVar("CVE_VENDOR") or ''
-        pncve = pncve_split[0]
-    elif len(pncve_split) == 2:
-        pnven = pncve_split[0]
-        pncve = pncve_split[1]
-    else:
-        pnven = d.getVar("CVE_VENDOR") or ''
-        pncve = opn
-    pvcve = d.getVar("CVE_VERSION").split("+git")[0]
     cpe_sw = d.getVar("CPE_TARGET_SW") or ''
     cpe_hw = d.getVar("CPE_TARGET_HW") or ''
     patched_vulns = sorted(patched)
 
     entries = []
 
-    for instance in pncve.split(' '):
+    for instance in d.getVar("CVE_PRODUCT").split(' '):
         instance = instance.strip()
         if not instance:
             continue
+        pncve_split = instance.split(':')
+        if len(pncve_split) == 2:
+            pnven = pncve_split[0]
+            pncve = pncve_split[1]
+        else:
+            pnven = d.getVar("CVE_VENDOR") or ''
+            pncve = pncve_split[0]
+        pvcve = d.getVar("CVE_VERSION").split("+git")[0]
         entry = '{0},{1},{2},{3},{4},{5},{6},{7}'.format(
             opn,
             opv,
