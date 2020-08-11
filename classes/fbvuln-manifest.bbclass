@@ -203,6 +203,13 @@ python fbvuln_track_write_manifest () {
                 except ValueError as ve:
                     bb.warn('{}'.format(ve))
 
+        if manifest_name:
+            manifest_dir = manifest_name.rsplit('/',1)
+            if manifest_dir:
+                manifest_dir = manifest_dir[0]
+                if not os.path.exists(manifest_dir):
+                    os.makedirs(manifest_dir)
+
         with open(manifest_name, 'w') as ofh:
             for pn in sorted(vulns.keys()):
                 meta = vulns[pn]
