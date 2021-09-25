@@ -132,10 +132,12 @@ python fbvuln_track_write_manifest () {
                     pkgmap[pkg] = dn
                     p = os.path.join(d.getVar("PKGDATA_DIR"), 'runtime', pkg)
                     needle = 'PKG_%s: ' % pkg
+                    needle2 = 'PKG:%s: ' % pkg
                     if os.path.isfile(p):
                         with open(p, 'r') as f:
                             for line in f:
-                                if not line.startswith(needle):
+                                if not line.startswith(needle) and \
+                                        not line.startswith(needle2):
                                     continue
                                 for rpkg in line[len(needle):].strip().split():
                                     pkgmap[rpkg] = dn
@@ -231,7 +233,7 @@ python fbvuln_track_write_manifest () {
         bb.debug(2, "Image vulnerability manifest saved to: %s" % manifest_name)
 }
 
-IMAGE_POSTPROCESS_COMMAND_prepend = "${@'fbvuln_track_write_manifest; '}"
+IMAGE_POSTPROCESS_COMMAND:prepend = "${@'fbvuln_track_write_manifest; '}"
 do_image_complete[recrdeptask] += "${@'do_fbvuln_track'}"
 
 def _scan_patch_file(f, matchers):
