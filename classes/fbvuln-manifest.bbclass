@@ -68,7 +68,6 @@
 #   bitbake core-image-minimal
 CVE_PRODUCT ??= "${BPN}"
 CVE_VERSION ??= "${PV}"
-CVE_CHECK_IGNORE ??= "${CVE_CHECK_WHITELIST}"
 FBVULN_EXCUDE_RECIPE ??= "0"
 
 FBVULN_CHECK_TMP_FILE ?= "${TMPDIR}/fbvuln.tmp"
@@ -263,7 +262,19 @@ def get_patches_vulns(d):
 
     patched_cves = set()
     bb.debug(2, "Looking for patches that solves CVEs for %s" % pn)
-    for ca in d.getVar("CVE_CHECK_IGNORE").split():
+
+    # Before Kirkstone, CVE_CHECK_WHITELIST contained the CVE fixes.
+    for ca in (d.getVar("CVE_CHECK_WHITELIST") or "").split():
+        bb.debug(2, "Adding prepatched CVE %s for %s" % (ca, pn))
+        patched_cves.add(ca)
+
+    # Before Scarthgap, CVE_CHECK_IGNORE contained the CVE fixes.
+    for ca in (d.getVar("CVE_CHECK_IGNORE") or "").split():
+        bb.debug(2, "Adding prepatched CVE %s for %s" % (ca, pn))
+        patched_cves.add(ca)
+
+    # With Scarthgap, CVE_STATUS also contains the CVE fixes.
+    for ca in (d.getVarFlags("CVE_STATUS") or {}).keys():
         bb.debug(2, "Adding prepatched CVE %s for %s" % (ca, pn))
         patched_cves.add(ca)
 
